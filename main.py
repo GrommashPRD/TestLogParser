@@ -1,7 +1,10 @@
-import argparse
+from logger import logger
 from datetime import datetime
-from tabulate import tabulate
-from script import loader, report_generators
+
+from exceptionts import *
+from script.logs_loader import loader
+from script.parser import parser_constructor
+from script.reports import making_report_table, report_generators
 
 reports = {
     'average': report_generators.generate_average_report,
@@ -10,52 +13,42 @@ reports = {
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Log file processor')
-    parser.add_argument(
-        '--file',
-        action='append',
-        required=True,
-        help='Path to log file (can be multiple)'
-    )
-    parser.add_argument(
-        '--report',
-        required=True,
-        choices=reports.keys(),
-        help='Report name'
-    )
-    parser.add_argument(
-        '--date',
-        help='Filter by date (YYYY-MM-DD)'
-    )
-
+    parser = parser_constructor.parser_preparing(reports)
     try:
         args = parser.parse_args()
     except SystemExit:
-        print("Error: Invalid command-line arguments. Please check usage.")
+        print("Error: Invalid command-line arguments")
         return
 
-    if args.date:
-        try:
-            date_filter = datetime.strptime(args.date, '%Y-%m-%d').date()
-        except ValueError:
-            print(
-                "Error: Invalid date format: $s Must be YYYY-MM-DD."
-                % args.date
-                )
-            return
-    else:
-        date_filter = None
-
+    date_filter = datetime.strptime(args.date, '%Y-%m-%d').date() if args.date else None
     logs = loader.load_logs(args.file, date_filter)
-    if args.report in reports:
-        table_data, headers = reports[args.report](logs)
-        if table_data:
-            print(tabulate(table_data, headers=headers, tablefmt='grid'))
-        else:
-            print("No data available for the report.")
-    else:
-        print("Error: Unknown report: %s" % args.report)
 
+    try:
+        report_table = making_report_table.report_table(args, reports, logs)
+    except FileNotFoundInPath as e:
+        logger.warning("%s" % e)
+        return
+    except IncorrectFileFormat as e:
+        logger.warning("%s" % e)
+        return
+    except JSONDecodeError as e:
+        logger.warning("%s" %e)
+        return
+    except MissingKeyError as e:
+        logger.warning("%s" %e)
+        return
+    except InvalidKeyError as e:
+        logger.warning("%s" %e)
+        return
+    except ReportTypeNotExist as e:
+        logger.warning("%s" %e)
+        return
+    except InvalidResponseTimeFormat as e:
+        logger.warning("%s" %e)
+        return
+
+    if report_table:
+        print(report_table)
 
 if __name__ == '__main__':
     main()
