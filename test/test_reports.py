@@ -1,8 +1,16 @@
+import sys
+
 import pytest
 from datetime import datetime
 
-from script import loader
-from script import report_generators
+from unittest.mock import patch, Mock
+
+import exceptionts
+from main import main
+from script.logs_loader import loader
+from script.parser import parser_constructor
+from script.reports import report_generators, making_report_table
+from script.reports.making_report_table import report_table
 
 
 @pytest.fixture
@@ -47,6 +55,18 @@ def invalid_timestamp_file(tmp_path):
     file.write_text("\n".join(data) + "\n")
     return str(file)
 
+@pytest.fixture
+def mock_reports():
+    # Создаем фиктивные данные отчетов
+    return {
+        "mock_report": lambda logs: ([["data1", "data2"], ["data3", "data4"]], ["Header1", "Header2"])
+    }
+
+
+@pytest.fixture
+def logs():
+    return {"log_key": "log_value"}
+
 
 def test_load_logs_valid(sample_log_file, capsys):
     logs = list(loader.load_logs([sample_log_file]))
@@ -56,26 +76,24 @@ def test_load_logs_valid(sample_log_file, capsys):
 
 
 def test_load_logs_invalid_json(invalid_json_file, capsys):
-    logs = list(loader.load_logs([invalid_json_file]))
-    assert len(logs) == 1
-    captured = capsys.readouterr()
-    assert "Error: Invalid JSON" in captured.out
+
+    with pytest.raises(exceptionts.JSONDecodeError, match="Invalid JSON in file"):
+        list(loader.load_logs([invalid_json_file]))
 
 
 def test_load_logs_missing_timestamp(missing_timestamp_file, capsys):
     date_filter = datetime(2023, 10, 1).date()
-    logs = list(loader.load_logs([missing_timestamp_file], date_filter))
-    assert len(logs) == 0
-    captured = capsys.readouterr()
-    assert "Error: Missing '@timestamp' key" in captured.out
+
+    with pytest.raises(exceptionts.MissingKeyError, match="Missing '@timestamp' key in log"):
+        list(loader.load_logs([missing_timestamp_file], date_filter))
+
 
 
 def test_load_logs_invalid_timestamp(invalid_timestamp_file, capsys):
     date_filter = datetime(2023, 10, 1).date()
-    logs = list(loader.load_logs([invalid_timestamp_file], date_filter))
-    assert len(logs) == 0
-    captured = capsys.readouterr()
-    assert "Error: Invalid timestamp format" in captured.out
+
+    with pytest.raises(exceptionts.InvalidKeyError, match="Invalid timestamp format"):
+        list(loader.load_logs([invalid_timestamp_file], date_filter))
 
 
 def test_load_logs_date_filter(sample_log_file):
@@ -102,18 +120,19 @@ def test_generate_average_report(capsys):
 
 def test_generate_average_report_missing_url(capsys):
     logs = [{"response_time": 0.5}]
-    table_data, _ = report_generators.generate_average_report(logs)
-    assert len(table_data) == 0
-    captured = capsys.readouterr()
-    assert "Error: Missing 'url' key" in captured.out
+
+    with pytest.raises(exceptionts.MissingKeyError,
+                       match=" Missing url key in a log entry"):
+        report_generators.generate_average_report(logs)
+
 
 
 def test_generate_average_report_invalid_response_time(capsys):
     logs = [{"url": "/api", "response_time": "not a number"}]
-    table_data, _ = report_generators.generate_average_report(logs)
-    assert len(table_data) == 0
-    captured = capsys.readouterr()
-    assert "Error in log processing: response_time must be a number" in captured.out
+
+    with pytest.raises(exceptionts.InvalidResponseTimeFormat,
+                       match="response_time must be a number"):
+        report_generators.generate_average_report(logs)
 
 
 def test_generate_user_agent_report(capsys):
@@ -136,3 +155,55 @@ def test_generate_user_agent_report_empty():
     logs = []
     table_data, _ = report_generators.generate_user_agent_report(logs)
     assert len(table_data) == 0
+
+
+def test_user_agent_report_with_empty_file_flag(capsys):
+    test_args = ["main.py", "--file", "--report", "User-Agents"]
+
+    with patch.object(sys, 'argv', test_args):
+        main()
+
+    captured = capsys.readouterr()
+    assert "Error: Invalid command-line" in captured.out
+
+def test_average_report_with_empty_file_flag(capsys):
+    test_args = ["main.py", "--file", "--report", "average"]
+
+    with patch.object(sys, 'argv', test_args):
+        main()
+
+    captured = capsys.readouterr()
+    assert "Error: Invalid command-line" in captured.out
+
+
+def test_report_table_file_not_found(mock_reports, logs):
+    args = Mock()
+    args.report = "non_existent_report"
+
+    with pytest.raises(KeyError):
+        report_table(args, mock_reports, logs)
+
+
+def test_report_table_missing_key_error(mock_reports, logs):
+    reports_with_error = {
+        "mock_report": lambda logs: (_ for _ in ()).throw(exceptionts.MissingKeyError("Missing key"))
+    }
+
+    args = Mock()
+    args.report = "mock_report"
+
+    with pytest.raises(exceptionts.MissingKeyError):
+        report_table(args, reports_with_error, logs)
+
+
+def test_report_table_invalid_key_error(mock_reports, logs):
+    reports_with_error = {
+        "mock_report": lambda logs: (_ for _ in ()).throw(exceptionts.InvalidKeyError("Invalid key"))
+    }
+
+    args = Mock()
+    args.report = "mock_report"
+
+    with pytest.raises(exceptionts.InvalidKeyError):
+        report_table(args, reports_with_error, logs)
+
