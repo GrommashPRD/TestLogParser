@@ -16,6 +16,7 @@
    _Linux_ - `xdg-open htmlcov/index.html`,\
    _Windows_ - `start htmlcov/index.html`
 
+
 ![img5.png](github_media/img5.png)
 
 ## Описание флагов:
