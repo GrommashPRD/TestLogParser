@@ -1,6 +1,6 @@
 # Cкрипт для обработки лог-файла.
 
-## [Документация]([DOCS.md](DOCS.md))
+## [Документация](DOCS.md)
 
 ## Начало пользования:
 1. Склонируйте репозиторий.
@@ -16,7 +16,7 @@
    _Linux_ - `xdg-open htmlcov/index.html`,\
    _Windows_ - `start htmlcov/index.html`
 
-![img.png](github_media/img5.png)
+![img5.png](github_media/img5.png)
 
 ## Описание флагов:
 1. `--file` - Можно указать как файл из директории проекта(напр. `--file example1.log`) \
