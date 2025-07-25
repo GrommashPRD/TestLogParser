@@ -10,12 +10,6 @@ def load_logs(
 
     for file_path in files:
         try:
-            fileManager.find_file_for_a_path(file_path)
-        except exceptionts.FileNotFoundInPath:
-            raise
-        except exceptionts.IncorrectFileFormat:
-            raise
-        try:
             for log in fileManager.read_file(file_path, date_filter):
                 yield log
         except exceptionts.JSONDecodeError:
@@ -23,4 +17,8 @@ def load_logs(
         except exceptionts.MissingKeyError:
             raise
         except exceptionts.InvalidKeyError:
+            raise
+        except exceptionts.FileNotFoundInPath:
+            raise
+        except exceptionts.IncorrectFileFormat:
             raise

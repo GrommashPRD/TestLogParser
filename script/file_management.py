@@ -23,6 +23,13 @@ class FileManager:
     def read_file(file_path, date_filter):
         log_filter = logsFilter.LogFilter
 
+        try:
+            FileManager.find_file_for_a_path(file_path)
+        except exceptionts.FileNotFound:
+            raise
+        except exceptionts.IncorrectFileFormat:
+            raise
+
         with open(file_path, 'r') as file:
             for line_number, line in enumerate(file, start=1):
                 try:

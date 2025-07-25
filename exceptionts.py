@@ -47,7 +47,7 @@ class ReportTypeNotExist(Exception):
     def __init__(self, message):
         super().__init__(message)
 
-class InvalidResponseTimeFormat(Exception):
+class EmptyReport(Exception):
 
     def __init__(self, message):
         super().__init__(message)
