@@ -5,7 +5,7 @@
 ## Начало пользования:
 1. Склонируйте репозиторий.
 2. Создайте и активируйте виртуальное окружение \
-`python -m venv .venv`
+`python -m venv .venv`\
 `source .venv/bin/activate`- Linux, \
 `.venv\Scripts\activate `- Windows
 3. Установите зависимости `pip install req.txt`.
