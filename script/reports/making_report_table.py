@@ -24,4 +24,6 @@ def report_table(
     if table_data:
         return tabulate(table_data, headers=headers, tablefmt='grid')
     else:
-        return None
+        raise exceptionts.EmptyReport(
+            message="Report dont have a data"
+        )

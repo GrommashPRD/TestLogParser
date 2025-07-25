@@ -35,17 +35,21 @@ def main():
         logger.warning("Incorrect JSON data: %s" % e)
         return
     except exceptionts.MissingKeyError as e:
-        logger.warning("Missing key: %s" %e)
+        logger.warning("Missing key: %s" % e)
         return
     except exceptionts.InvalidKeyError as e:
-        logger.warning("Invalid key: %s" %e)
+        logger.warning("Invalid key: %s" % e)
         return
     except exceptionts.ReportTypeNotExist as e:
-        logger.warning("Report type is not exit %s" %e)
+        logger.warning("Report type is not exit %s" % e)
+        return
+    except exceptionts.EmptyReport as e:
+        logger.warning("Empty report: %s" % e)
         return
 
     if report_table:
         print(report_table)
+
 
 if __name__ == '__main__':
     main()
