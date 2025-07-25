@@ -1,6 +1,6 @@
 from tabulate import tabulate
 from typing import Any, Callable, Dict, List, Optional, Tuple
-from exceptionts import FileNotFoundInPath, IncorrectFileFormat, JSONDecodeError, MissingKeyError, InvalidKeyError
+import exceptionts
 
 
 def report_table(
@@ -10,15 +10,15 @@ def report_table(
 ) -> Optional[str]:
     try:
         table_data, headers = reports[args.report](logs)
-    except FileNotFoundInPath:
+    except exceptionts.FileNotFoundInPath:
         raise
-    except IncorrectFileFormat:
+    except exceptionts.IncorrectFileFormat:
         raise
-    except JSONDecodeError:
+    except exceptionts.JSONDecodeError:
         raise
-    except MissingKeyError:
+    except exceptionts.MissingKeyError:
         raise
-    except InvalidKeyError:
+    except exceptionts.InvalidKeyError:
         raise
 
     if table_data:
