@@ -1,8 +1,13 @@
-# Cкрипт для обработки лог-файла
+# Cкрипт для обработки лог-файла.
+
+## [Документация]([DOCS.md](DOCS.md))
 
 ## Начало пользования:
 1. Склонируйте репозиторий.
-2. Создайте и активируйте виртуальное окружение.
+2. Создайте и активируйте виртуальное окружение \
+`python -m venv .venv`
+`source .venv/bin/activate`- Linux, \
+`.venv\Scripts\activate `- Windows
 3. Установите зависимости `pip install req.txt`.
 
 ## Для проверки покрытия кода тестами:
@@ -28,6 +33,9 @@ P.S. Для добавления новой логики отчета, не на
 отчета в модуль **report_generators.py**, и добавить этот отчет в словарь reports из модуля **main.py**.
 
 ## Примеры использования кода:
+
+![img.png](github_media/img6.png)
+
 `python main.py --file example1.log --file example2.log --file example3.log --report average`
 
 ![img.png](github_media/img.png)

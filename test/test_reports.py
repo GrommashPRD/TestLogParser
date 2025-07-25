@@ -8,10 +8,8 @@ from unittest.mock import patch, Mock
 import exceptionts
 from main import main
 from script.logs_loader import loader
-from script.parser import parser_constructor
-from script.reports import report_generators, making_report_table
+from script.reports import report_generators
 from script.reports.making_report_table import report_table
-
 
 @pytest.fixture
 def sample_log_file(tmp_path):
@@ -57,7 +55,6 @@ def invalid_timestamp_file(tmp_path):
 
 @pytest.fixture
 def mock_reports():
-    # Создаем фиктивные данные отчетов
     return {
         "mock_report": lambda logs: ([["data1", "data2"], ["data3", "data4"]], ["Header1", "Header2"])
     }
@@ -130,7 +127,7 @@ def test_generate_average_report_missing_url(capsys):
 def test_generate_average_report_invalid_response_time(capsys):
     logs = [{"url": "/api", "response_time": "not a number"}]
 
-    with pytest.raises(exceptionts.InvalidResponseTimeFormat,
+    with pytest.raises(exceptionts.InvalidKeyError,
                        match="response_time must be a number"):
         report_generators.generate_average_report(logs)
 

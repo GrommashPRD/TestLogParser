@@ -1,6 +1,6 @@
 from collections import defaultdict
-from typing import Any, Dict, List, Tuple, Union
-from exceptionts import MissingKeyError, InvalidResponseTimeFormat
+from typing import Dict, List, Tuple, Union
+from exceptionts import MissingKeyError, InvalidKeyError
 
 TIMESTAMP = "@timestamp"
 STATUS = "status"
@@ -37,7 +37,7 @@ def generate_average_report(
             raise MissingKeyError("Error: Missing %s key in a log entry" % RESPONSE_TIME)
 
         if not isinstance(response_time, (int, float)):
-            raise InvalidResponseTimeFormat(message="%s must be a number" % RESPONSE_TIME)
+            raise InvalidKeyError(message="%s must be a number" % RESPONSE_TIME)
 
         endpoint_data[url][COUNT] += 1
         endpoint_data[url][TOTAL_TIME] += response_time
