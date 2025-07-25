@@ -12,6 +12,11 @@ USER_AGENT = "http_user_agent"
 COUNT = 'count'
 TOTAL_TIME = "total_time"
 
+ENDPOINT = "Endpoint"
+AVERAGE = "Average"
+USER_AGENTS = "User-Agents"
+COUNTER = "Count"
+
 
 LogEntry = Dict[str, Union[str, int, float]]
 
@@ -52,7 +57,7 @@ def generate_average_report(
 
     table_data.sort(key=lambda x: (-x[2], -x[1]))
 
-    return table_data, ['Endpoint', 'Count', 'Average']
+    return table_data, [ENDPOINT, COUNTER, AVERAGE]
 
 
 def generate_user_agent_report(
@@ -70,4 +75,4 @@ def generate_user_agent_report(
         )
     ]
 
-    return table_data, ['User-Agent', 'Count']
+    return table_data, [USER_AGENTS, COUNTER]
