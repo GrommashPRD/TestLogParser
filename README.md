@@ -8,7 +8,7 @@
 `python -m venv .venv`\
 `source .venv/bin/activate`- Linux, \
 `.venv\Scripts\activate `- Windows
-3. Установите зависимости `pip install req.txt`.
+3. Установите зависимости `pip install -r req.txt`.
 
 ## Для проверки покрытия кода тестами:
 1. `pytest --cov=script --cov-report=html`
