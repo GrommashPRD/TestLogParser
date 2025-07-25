@@ -1,6 +1,6 @@
 from tabulate import tabulate
 from typing import Any, Callable, Dict, List, Optional, Tuple
-from exceptionts import *
+from exceptionts import FileNotFoundInPath, IncorrectFileFormat, JSONDecodeError, MissingKeyError, InvalidKeyError
 
 
 def report_table(
