@@ -139,7 +139,7 @@ def test_generate_user_agent_report(capsys):
         {"http_user_agent": "Chrome/1.0"}
     ]
     table_data, headers = report_generators.generate_user_agent_report(logs)
-    assert headers == ['User-Agent', 'Count']
+    assert headers == ['User-Agents', 'Count']
     assert table_data == [
         ["Mozilla/5.0", 2],
         ["Chrome/1.0", 1]
@@ -154,23 +154,33 @@ def test_generate_user_agent_report_empty():
     assert len(table_data) == 0
 
 
-def test_user_agent_report_with_empty_file_flag(capsys):
+def test_user_agent_report_with_empty_file_flag(capsys, caplog):
     test_args = ["main.py", "--file", "--report", "User-Agents"]
 
     with patch.object(sys, 'argv', test_args):
         main()
 
-    captured = capsys.readouterr()
-    assert "Error: Invalid command-line" in captured.out
+    # Проверка предупреждения в логах
+    assert "Incorrect flag" in caplog.text
 
-def test_average_report_with_empty_file_flag(capsys):
+    # Проверка, что в стандартном выводе нет сообщения об ошибке
+    captured = capsys.readouterr()
+    assert "Error: Invalid command-line" not in captured.out
+
+
+def test_average_report_with_empty_file_flag(capsys, caplog):
     test_args = ["main.py", "--file", "--report", "average"]
 
     with patch.object(sys, 'argv', test_args):
         main()
 
+    # Проверка предупреждения в логах
+    assert "Incorrect flag" in caplog.text
+
+    # Проверка, что в стандартном выводе нет сообщения об ошибке
     captured = capsys.readouterr()
-    assert "Error: Invalid command-line" in captured.out
+    assert "Error: Invalid command-line" not in captured.out
+
 
 
 def test_report_table_file_not_found(mock_reports, logs):

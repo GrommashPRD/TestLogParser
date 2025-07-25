@@ -16,8 +16,7 @@
    _Linux_ - `xdg-open htmlcov/index.html`,\
    _Windows_ - `start htmlcov/index.html`
 
-
-![img5.png](github_media/img5.png)
+![img.png](github_media/img7.png)
 
 ## Описание флагов:
 1. `--file` - Можно указать как файл из директории проекта(напр. `--file example1.log`) \
